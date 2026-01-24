@@ -178,6 +178,11 @@ def parse_args() -> argparse.Namespace:
         "--sandbox-setup",
         help="Path to setup script to run in sandbox after creation",
     )
+    parser.add_argument(
+        "--task-list",
+        dest="task_list_id",
+        help="Task list ID to share across sessions. Also reads DEEPAGENTS_TASK_LIST_ID env var.",
+    )
     return parser.parse_args()
 
 
@@ -191,6 +196,7 @@ async def run_textual_cli_async(
     thread_id: str | None = None,
     is_resumed: bool = False,
     initial_prompt: str | None = None,
+    task_list_id: str | None = None,
 ) -> None:
     """Run the Textual CLI interface (async version).
 
@@ -203,6 +209,7 @@ async def run_textual_cli_async(
         thread_id: Thread ID to use (new or resumed)
         is_resumed: Whether this is a resumed session
         initial_prompt: Optional prompt to auto-submit when session starts
+        task_list_id: Optional task list ID for sharing tasks across sessions
     """
     from deepagents_cli.app import run_textual_app
 
@@ -245,6 +252,7 @@ async def run_textual_cli_async(
                 sandbox_type=sandbox_type if sandbox_type != "none" else None,
                 auto_approve=auto_approve,
                 checkpointer=checkpointer,
+                task_list_id=task_list_id,
             )
 
             # Run Textual app
@@ -364,6 +372,7 @@ def cli_main() -> None:
                     thread_id=thread_id,
                     is_resumed=is_resumed,
                     initial_prompt=getattr(args, "initial_prompt", None),
+                    task_list_id=getattr(args, "task_list_id", None),
                 )
             )
     except KeyboardInterrupt:
